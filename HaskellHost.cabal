@@ -1,0 +1,20 @@
+cabal-version:      2.4
+name:               HaskellHost
+version:            0.1.0.0
+author:             Christoffer Lind Andersen
+maintainer:         57995582+Chri692u@users.noreply.github.com
+extra-source-files:
+    CHANGELOG.md
+    README.md
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     Console
+                       
+  build-depends:       base, mtl, haskeline, happstack-lite
+
+executable HaskellHost
+    main-is:          Main.hs
+    build-depends:    base, happstack-lite, HaskellHost
+    hs-source-dirs:   app
+    default-language: Haskell2010
