@@ -6,7 +6,7 @@ import Control.Monad.Trans
 import Happstack.Lite
 
 start :: ServerConfig -> ServerPart Response -> IO ()
-start config  router = do
+start config router = do
     tid <- liftIO $ forkFinally run finish
     console tid
         where run = serve (Just config) router

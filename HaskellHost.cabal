@@ -9,12 +9,14 @@ extra-source-files:
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Console
+  exposed-modules:     Console, Parser
                        
-  build-depends:       base, mtl, haskeline, happstack-lite
+  build-depends:       base, mtl, text,
+                       parsec, haskeline,
+                       happstack-lite
 
 executable HaskellHost
     main-is:          Main.hs
-    build-depends:    base, happstack-lite, HaskellHost
+    build-depends:    base, text, happstack-lite, HaskellHost
     hs-source-dirs:   app
     default-language: Haskell2010
