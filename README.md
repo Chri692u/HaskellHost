@@ -23,3 +23,5 @@ touch initialize.sh
 vim initialize -- Write the shell script
 chmod +x initialize.sh
 ```
+Now, when the server starts, it will run this script.
+Finally, to start the webserver, simply run `cabal run`
