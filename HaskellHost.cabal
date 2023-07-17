@@ -9,11 +9,11 @@ extra-source-files:
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Console, Parser
+  exposed-modules:     Console, Parser, Scripting
                        
   build-depends:       base, mtl, text,
                        parsec, haskeline,
-                       happstack-lite
+                       happstack-lite, process
 
 executable HaskellHost
     main-is:          Main.hs

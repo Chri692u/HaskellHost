@@ -6,6 +6,7 @@ import Happstack.Lite
 
 import Parser
 import Console
+import Scripting
 
 createRouter :: FilePath -> ServerPart Response
 createRouter dist = msum [ serveDirectory EnableBrowsing ["index.html"] dist ]
@@ -21,13 +22,12 @@ createConfig cfg = ServerConfig { port = hport cfg
 
 main :: IO ()
 main = do
-  mconfig <- parseConfigFile "config.ini"
-  case mconfig of
-    Left error -> print error
-    Right cfg -> do
-      when (initialize cfg) $ do
-        -- run script
-        print "running script lol"
-      let config = createConfig cfg
-          router = createRouter $ unpack $ website cfg
-      start config router
+    mconfig <- parseConfigFile "config.ini"
+    case mconfig of
+        Left error -> print error
+        Right cfg -> do
+            let config = createConfig cfg
+            let router = createRouter $ unpack $ website cfg
+            when (initialize cfg) $ do
+                runScript "initialize.sh"
+            start config router
