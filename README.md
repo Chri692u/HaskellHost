@@ -9,7 +9,7 @@ cd dist-website
 git pull *your website repo*
 ```
 Once we have the website ready, we can configure the server. Open the config file and fill it out:
-```
+```bash
 initialize = false
 port = 8080
 folder = example-website
@@ -28,10 +28,10 @@ HaskellHost provides an interface to proxy http requests with API-keys safely us
 
 ## Using JavaScript on the client
 Running the example website displays how this can be done. In the `secrets.env` we have `KANYE_API_KEY=kanye`, then on the front-end we can do the following:
-'''
+```JS
 const placeholderUrl = "https://api.${KANYE_API_KEY}.rest/";
 const response = await fetch(
           `/api/proxy?url=${encodeURIComponent(placeholderUrl)}`
         );
-'''
+```
 Notice that this is the same syntax as JavaScript, but without the backticks. Now the client will never see our secret "kanye" keeping it hidden on the server-side. Run the example and see for yourself using the `example-website` directory.
