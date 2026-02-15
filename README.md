@@ -1,5 +1,5 @@
 # HaskellHost
- A configurable HTTP server for hosting websites
+ A configurable HTTP server for hosting websites with safe proxy.
  
 # How to use
 Start out by making a new folder for the website inside the HaskellHost repo and clone your website
@@ -14,16 +14,16 @@ initialize = false
 port = 8080
 folder = example-website
 ```
-Now, the `initialize = false` line tells the webserver that we do not have a startup script. If you want the server to run a script before starting the server, set this to `initialize = true` and make a shell script inside the HaskellHost repo:
+Now, the `initialize = false` line tells the web-server that we do not have a startup script. If you want the server to run a script before starting the server, set this to `initialize = true` and make a shell script inside the HaskellHost repo:
 ```
 touch initialize.sh
 vim initialize -- Write the shell script
 chmod +x initialize.sh
 ```
 Now, when the server starts, it will run this script.
-Finally, to start the webserver, simply run `cabal run` or build the executable.
+Finally, to start the web=server, simply run `cabal run` or build the executable `cabal build`.
 
-# Using .env files - no more API-keys on the front-end
+# Using .env files - no more API-keys on the front-end!
 HaskellHost provides an interface to proxy http requests with API-keys safely using string interpolation in a JavaScript style. Simply make an environment file `secrets.env` and fill in the lines with `KEY=SECRET` pairs. Then from the frontend send a string `https://api.endpoint/${KEY}` and the server will return the result to the client.
 
 ## Using JavaScript on the client
