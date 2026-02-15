@@ -34,4 +34,4 @@ const response = await fetch(
           `/api/proxy?url=${encodeURIComponent(placeholderUrl)}`
         );
 '''
-Notice that this is the same syntax as JavaScript, but without the backticks. Now the client will never see our secret "kanye" keeping it hidden on the server-side.
+Notice that this is the same syntax as JavaScript, but without the backticks. Now the client will never see our secret "kanye" keeping it hidden on the server-side. Run the example and see for yourself using the `example-website` directory.
