@@ -15,7 +15,7 @@ port = 8080
 folder = example-website
 ```
 Now, the `initialize = false` line tells the webserver that we do not have a startup script. If you want the server to run a script before starting the server, set this to `initialize = true` and make a shell script inside the HaskellHost repo:
-```bash
+```
 touch initialize.sh
 vim initialize -- Write the shell script
 chmod +x initialize.sh
@@ -28,7 +28,7 @@ HaskellHost provides an interface to proxy http requests with API-keys safely us
 
 ## Using JavaScript on the client
 Running the example website displays how this can be done. In the `secrets.env` we have `KANYE_API_KEY=kanye`, then on the front-end we can do the following:
-'''js
+'''
 const placeholderUrl = "https://api.${KANYE_API_KEY}.rest/";
 const response = await fetch(
           `/api/proxy?url=${encodeURIComponent(placeholderUrl)}`
