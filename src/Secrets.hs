@@ -1,17 +1,15 @@
 module Secrets where
 
-import Data.Map (Map)
-import Data.Text (Text, pack, unpack)
+import Data.Text (pack, unpack)
 import qualified Data.Map as M
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-
 import Parser
 
 -- ----------------------
 -- Load secrets from "secrets.env"
 -- ----------------------
-loadSecrets :: IO (Map Text Text)
+loadSecrets :: IO Secrets
 loadSecrets = do
     content <- TIO.readFile "secrets.env"
     let ls = map (stripLine . pack) (lines $ unpack content)
@@ -30,13 +28,13 @@ loadSecrets = do
 -- ----------------------
 -- Replace placeholders with secrets
 -- ----------------------
-fixStr :: Text -> Map Text Text -> Either String Text
-fixStr input secrets =
+fixURL :: Key -> Secrets -> Either String URL
+fixURL input secrets =
     case parsePlaceholders secrets input of
         Left err    -> Left err
         Right parts -> concatEither parts
   where
-    concatEither :: [Either String Text] -> Either String Text
+    concatEither :: [Either String Secret] -> Either String URL
     concatEither xs =
         case [e | Left e <- xs] of
             []   -> Right $ mconcat [v | Right v <- xs]
