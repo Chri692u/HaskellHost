@@ -35,12 +35,20 @@ proxyFetch url = do
 proxyPass :: BL.ByteString -> ServerPart Response
 proxyPass result = ok $ toResponse result
 
--- | Proxy endpoint: replace secrets, fetch URL, and return JSON
+-- | Proxy endpoint: replace secrets, fetch URL, return JSON
+--   Only allows requests from localhost
 proxy :: Secrets -> URL -> ServerPart Response
-proxy secrets url =
-    case fixURL url secrets of
-        Left err ->
-            badRequest $ toResponse ("Secret replacement error: " ++ err)
-        Right fixedUrl -> do
-            result <- liftIO $ proxyFetch fixedUrl
-            proxyPass result
+proxy secrets url = do
+    rq <- askRq
+    let peer = rqPeer rq
+    if not (isLocalHost peer)
+      then forbidden $ toResponse ("Proxy requests only allowed from localhost")
+      else case fixURL url secrets of
+             Left err -> badRequest $ toResponse ("Secret replacement error: " ++ err)
+             Right fixedUrl -> do
+                 result <- liftIO $ proxyFetch fixedUrl
+                 proxyPass result
+
+-- | Check if the peer is localhost
+isLocalHost :: (String, Int) -> Bool
+isLocalHost (host, _) = host == "127.0.0.1" || host == "::1"

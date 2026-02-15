@@ -30,3 +30,13 @@ main = do
                 runScript "initialize.sh"
             putStrLn "Starting server..."
             start serverConf router
+
+
+{- 
+Todo for next time:
+1. Error logging in Networking would be nice
+2. A good REPL that actually is useful
+3. Look at Happstack for potential things to add to the config
+4. Configurable whitelist (not just localhost)
+5. Encryption of .env perhaps
+-}
