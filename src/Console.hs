@@ -2,16 +2,16 @@ module Console where
 
 import System.Console.Haskeline
 import Control.Concurrent
-import Control.Monad.Trans
-import Happstack.Lite
+import Control.Monad.IO.Class
+import Happstack.Server
 
-start :: ServerConfig -> ServerPart Response -> IO ()
+-- Run the server with your router
+start :: Conf -> ServerPart Response -> IO ()
 start config router = do
-    tid <- liftIO $ forkFinally run finish
+    tid <- forkIO $ simpleHTTP config router
+    putStrLn $ "Server running on port " ++ show (port config)
     console tid
-        where run = serve (Just config) router
-              finish = const $ putStrLn "Server stopped."
-
+    
 -- Run server until stop command
 console :: ThreadId -> IO ()
 console tid = runInputT defaultSettings loop

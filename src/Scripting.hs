@@ -1,8 +1,9 @@
 module Scripting where
 
-import System.Process
-import System.Exit
+import System.Process (createProcess, waitForProcess, shell)
+import System.Exit (ExitCode(ExitFailure, ExitSuccess))
 
+runScript :: String -> IO ()
 runScript path = do
   (_, _, _, processHandle) <- createProcess (shell path)
   exitCode <- waitForProcess processHandle
