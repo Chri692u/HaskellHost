@@ -22,4 +22,5 @@ main = do
                 runScript "initialize.sh"
             let serverConf = createConfig cfg
             putStrLn "HaskellHost starting..."
+            putStrLn $ "Server running on: http://localhost:" ++ show (hport cfg)
             start cfg secrets
