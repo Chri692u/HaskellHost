@@ -1,0 +1,20 @@
+body {
+  font-family: monospace;
+  padding: 1rem;
+  background: #111;
+  color: #eee;
+}
+pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: #1e1e1e;
+  padding: 1rem;
+  border-radius: 6px;
+  max-height: 80vh;
+  overflow: auto;
+}
+button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
