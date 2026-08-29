@@ -1,0 +1,11 @@
+1. Remove the localhost restriction from the proxy.
+   Website visitors do not appear as localhost when HaskellHost runs in Docker or
+   on a remote server, so legitimate frontend requests must be accepted.
+
+2. Add an API endpoint whitelist to the configuration.
+   Associate secrets with the hosts that may receive them, and reject proxy URLs
+   that attempt to interpolate a secret for any unapproved destination.
+
+3. Add rate limiting to the proxy endpoint.
+   Limit requests per client IP over a configurable time window so attackers
+   cannot freely consume an approved API's quota through HaskellHost.
