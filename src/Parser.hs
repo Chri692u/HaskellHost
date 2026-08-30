@@ -1,11 +1,12 @@
 module Parser where
 
-import Data.Text (Text, unpack, pack, strip)
+import Data.Text (Text, unpack, pack, strip, splitOn)
 import Data.Map (Map)
 import Text.Parsec.String (Parser)
 import Text.Parsec
 import Control.Monad (void)
 import qualified Data.Text.IO as TIO
+import qualified Data.Text as T
 import qualified Data.Map as M
 
 -- ----------------------
@@ -15,6 +16,7 @@ type Key = Text
 type Secret = Text
 type URL = Text
 type Secrets = Map Key Secret
+type Whitelist = [Text]
 
 -- ----------------------
 -- Config type
@@ -24,6 +26,7 @@ data Config = Config
     { initialize :: Bool
     , hport      :: Int
     , folder    :: Text
+    , whitelist :: Whitelist
     } deriving (Show)
 
 -- ----------------------
@@ -48,6 +51,7 @@ parseConfig = do
         { initialize = readBool (pack "initialize") table
         , hport = readInt (pack "port") table
         , folder = readText (pack "folder") table
+        , whitelist = readWhitelist (pack "whitelist") table
         }
 
 configLine :: Parser (Key, Secret)
@@ -56,8 +60,19 @@ configLine = do
     spaces
     key <- many1 (letter <|> digit)
     spaces >> char '=' >> spaces
-    val <- manyTill anyChar (try (void newline) <|> eof)
+    val <- try bracketedValue <|> lineValue
     return (pack key, strip $ pack val)
+
+bracketedValue :: Parser String
+bracketedValue = do
+    _ <- char '['
+    contents <- manyTill anyChar (char ']')
+    _ <- many (oneOf " \t")
+    _ <- try (void newline) <|> eof
+    return $ "[" ++ contents ++ "]"
+
+lineValue :: Parser String
+lineValue = manyTill anyChar (try (void newline) <|> eof)
 
 comment :: Parser ()
 comment = do
@@ -86,6 +101,20 @@ readText k m =
     case M.lookup k m of
         Just v  -> v
         Nothing -> error ("Missing config key: " ++ unpack k)
+
+readWhitelist :: Text -> Secrets -> Whitelist
+readWhitelist k m =
+    case M.lookup k m of
+        Just value ->
+            case stripBrackets (strip value) of
+                Just contents ->
+                    filter (not . T.null) $ map strip $ splitOn (pack ",") contents
+                Nothing -> error "Whitelist must be enclosed in [ and ]"
+        Nothing -> []
+  where
+    stripBrackets value = do
+        withoutOpeningBracket <- T.stripPrefix (pack "[") value
+        T.stripSuffix (pack "]") withoutOpeningBracket
 
 -- ----------------------
 -- Placeholder Logic

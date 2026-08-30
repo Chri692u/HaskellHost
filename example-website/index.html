@@ -14,6 +14,20 @@
 
   <pre id="output">Click the button to fetch a quote…</pre>
 
+  <h2>Whitelist attack simulation</h2>
+  <p>
+    This script sends one allowed request and then tries to send the same secret
+    to an attacker-controlled endpoint.
+  </p>
+  <button id="run-attacker">Run attacker simulation</button>
+
+  <h3>Allowed request</h3>
+  <pre id="allowed-output">Not run yet.</pre>
+
+  <h3>Blocked request</h3>
+  <pre id="blocked-output">Not run yet.</pre>
+
   <script src="app.js"></script>
+  <script src="attacker.js"></script>
 </body>
 </html>

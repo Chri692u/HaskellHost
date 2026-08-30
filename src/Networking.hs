@@ -6,6 +6,7 @@ import Control.Concurrent
 import Control.Monad.IO.Class
 import Control.Monad (msum)
 import Data.Text (pack, unpack)
+import qualified Data.Text as T
 import qualified Network.HTTP.Simple as NW
 import qualified Data.ByteString.Lazy as BL
 import Parser
@@ -28,11 +29,11 @@ noCache sp = do
 --   1. API proxying with secret replacement
 --   2. Serving static files from a given directory with no-cache
 -- Creating a new router each time ensures updates to files or routes are reflected
-createRouter :: FilePath -> Secrets -> ServerPart Response
-createRouter dist secrets = msum
+createRouter :: FilePath -> Whitelist -> Secrets -> ServerPart Response
+createRouter dist whitelist secrets = msum
     [ dir "api" $ dir "proxy" $ do
           url <- look "url"
-          proxy secrets (pack url)
+          proxy whitelist secrets (pack url)
     , noCache $ serveDirectory EnableBrowsing ["index.html"] dist
     ]
 
@@ -50,7 +51,7 @@ createConfig cfg = nullConf { port = hport cfg }
 startServer :: Config -> Secrets -> IO ThreadId
 startServer cfg secrets = do
     let conf = createConfig cfg
-        router = createRouter (unpack $ folder cfg) secrets
+        router = createRouter (unpack $ folder cfg) (whitelist cfg) secrets
     forkIO $ simpleHTTP conf router
 
 -- Start server only if it's not already running
@@ -112,19 +113,16 @@ proxyFetch url = do
 proxyPass :: BL.ByteString -> ServerPart Response
 proxyPass result = ok $ toResponse result
 
--- Proxy endpoint with secret replacement, only localhost allowed
-proxy :: Secrets -> URL -> ServerPart Response
-proxy secrets url = do
-    rq <- askRq
-    let peer = rqPeer rq
-    if not (isLocalHost peer)
-      then forbidden $ toResponse ("Proxy requests only allowed from localhost")
-      else case fixURL url secrets of
-             Left err -> badRequest $ toResponse ("Secret replacement error: " ++ err)
-             Right fixedUrl -> do
-                 result <- liftIO $ proxyFetch (unpack fixedUrl)
-                 proxyPass result
+-- Proxy endpoint with secret replacement and URL-prefix whitelisting
+proxy :: Whitelist -> Secrets -> URL -> ServerPart Response
+proxy whitelist secrets url =
+    case fixURL url secrets of
+        Left err -> badRequest $ toResponse ("Secret replacement error: " ++ err)
+        Right fixedUrl
+            | isWhitelisted whitelist fixedUrl -> do
+                result <- liftIO $ proxyFetch (unpack fixedUrl)
+                proxyPass result
+            | otherwise -> forbidden $ toResponse ("Proxy URL is not whitelisted")
 
--- Check if the request comes from localhost
-isLocalHost :: (String, Int) -> Bool
-isLocalHost (host, _) = host == "127.0.0.1" || host == "::1"
+isWhitelisted :: Whitelist -> URL -> Bool
+isWhitelisted whitelist url = any (`T.isPrefixOf` url) whitelist
