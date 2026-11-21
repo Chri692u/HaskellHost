@@ -41,3 +41,9 @@ const response = await fetch(
         );
 ```
 Notice that this is the same syntax as JavaScript, but without the backticks. Now the client will never see our secret "kanye" keeping it hidden on the server-side. Run the example and see for yourself using the `example-website` directory.
+
+# Todo features
+1. Support for going from secrets.env to environment variables on production
+2. Whitelist is currently really naive and limited, an upgrade would be nice
+3. IP-based rate limiting would be good, global rate limit would be a nice start
+4. Support for disk storage with encryption would be good

@@ -1,6 +1,0 @@
-Problems regarding proxy safety:
-1. Match whitelist entries against parsed URL hosts and paths.
-2. Reject redirects that leave the whitelist.
-3. Rate-limit proxy requests per visitor.
-4. Add request timeouts and response-size limits.
-5. Return safe errors when an upstream request fails.
